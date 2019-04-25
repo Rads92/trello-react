@@ -1,24 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import "./App.css";
+import { Route, Switch } from "react-router";
+import routes from "./routes";
+import NoMatch from "./components/NoMatch/index";
 
 function App() {
+  const routesToRender = [];
+  routes.forEach((route, key) => {
+    const nestedRoutes = route.children.map((nestedRoute, nestedKey) => (
+      <Route
+        {...nestedRoute}
+        path={route.main.path + nestedRoute.path}
+        key={nestedKey}
+      />
+    ));
+
+    routesToRender.push(<Route {...route.main} key />, ...nestedRoutes);
+  });
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Switch>
+        {routesToRender}
+        <Route key={"no-match"} component={NoMatch} />
+      </Switch>
     </div>
   );
 }
